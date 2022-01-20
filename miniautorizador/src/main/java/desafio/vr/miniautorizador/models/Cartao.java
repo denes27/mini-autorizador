@@ -5,21 +5,21 @@ import org.springframework.data.annotation.Id;
 public class Cartao {
 
     @Id
-    private int id;
-    private float saldo;
+    private String numeroCartao;
+    private double saldo;
     private String senha;
 
-    public Cartao(int id, float saldo, String senha) {
-        this.id = id;
+    public Cartao(String numeroCartao, double saldo, String senha) {
+        this.numeroCartao = numeroCartao;
         this.saldo = saldo;
         this.senha = senha;
     }
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return numeroCartao;
     }
 
-    public float getSaldo() {
+    public double getSaldo() {
         return saldo;
     }
 

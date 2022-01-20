@@ -9,7 +9,7 @@ public class Verificador {
         return !ehNuloOuVazio(cartao.getNumeroCartao()) && cartao.getNumeroCartao().length() == 16 && !ehNuloOuVazio(cartao.getSenha());
     }
 
-    public boolean ehNuloOuVazio(String s) {
+    private boolean ehNuloOuVazio(String s) {
         return s == null || s.isBlank();
     }
 }
