@@ -4,14 +4,19 @@ import desafio.vr.miniautorizador.dtos.CartaoDto;
 import desafio.vr.miniautorizador.models.Cartao;
 import desafio.vr.miniautorizador.services.CartaoService;
 import desafio.vr.miniautorizador.utils.Verificador;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.websocket.server.PathParam;
 
 @Controller
 public class CartaoController {
@@ -21,6 +26,8 @@ public class CartaoController {
 
     @Autowired
     private CartaoService service;
+
+    private Logger logger = LogManager.getLogger("CartaoController");
 
     @GetMapping("/cartoes")
     private ResponseEntity<Iterable<Cartao>> listarCartoes() {
@@ -33,10 +40,21 @@ public class CartaoController {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Cartão inválido");
         }
 
+        logger.info("Criação de cartão requisitada. Número: " + novoCartao.getNumeroCartao());
+
         try {
             return new ResponseEntity<CartaoDto>(service.criarCartao(novoCartao), HttpStatus.CREATED);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<CartaoDto>(novoCartao, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    @GetMapping("/cartoes/{numeroCartao}")
+    private ResponseEntity<String> consultarSaldo(@PathVariable("numeroCartao") String numeroCartao) {
+        try {
+            return new ResponseEntity<String>(service.consultarSaldo(numeroCartao), HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

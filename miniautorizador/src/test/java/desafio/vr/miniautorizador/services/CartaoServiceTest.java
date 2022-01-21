@@ -14,6 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,5 +48,22 @@ public class CartaoServiceTest {
         subject.criarCartao(dto);
         verify(cartaoRepository, times(1)).existsById(dto.getNumeroCartao());
         verify(cartaoRepository, times(1)).save(any(Cartao.class));
+    }
+
+    @Test
+    public void deveRetornar404SeSaldoConsultadoDeCartaoInexistente() {
+        String numeroCartao = Mockito.anyString();
+        Mockito.when(cartaoRepository.findById(numeroCartao)).thenReturn(Optional.empty());
+        ResponseStatusException ex = Assert.assertThrows(ResponseStatusException.class, () -> subject.consultarSaldo(numeroCartao));
+        Assert.assertTrue(ex.getStatus().equals(HttpStatus.BAD_REQUEST));
+    }
+
+    @Test
+    public void deveRetornarSaldoSeConsultarEstiverOk() {
+        String numeroCartao = "numerocartao";
+        Cartao cartao = Mockito.mock(Cartao.class);
+        Mockito.when(cartaoRepository.findById(numeroCartao)).thenReturn(Optional.of(cartao));
+        Mockito.when(cartao.getSaldo()).thenReturn(500.27);
+        Assert.assertEquals(subject.consultarSaldo(numeroCartao), String.valueOf(500.27));
     }
 }
