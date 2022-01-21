@@ -56,7 +56,7 @@ public class CartaoService {
             throw new SenhaInvalidaException();
         }
 
-        if(!(cartao.getSaldo() > dto.getValor())) {
+        if(!(cartao.getSaldo() >= dto.getValor())) {
             logger.error("Saldo insuficiente");
             throw new SaldoInsuficienteException();
         }
