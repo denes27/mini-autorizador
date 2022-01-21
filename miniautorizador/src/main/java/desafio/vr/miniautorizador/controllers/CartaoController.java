@@ -1,6 +1,10 @@
 package desafio.vr.miniautorizador.controllers;
 
 import desafio.vr.miniautorizador.dtos.CartaoDto;
+import desafio.vr.miniautorizador.dtos.TransacaoDto;
+import desafio.vr.miniautorizador.exceptions.CartaoInvalidoException;
+import desafio.vr.miniautorizador.exceptions.SaldoInsuficienteException;
+import desafio.vr.miniautorizador.exceptions.SenhaInvalidaException;
 import desafio.vr.miniautorizador.models.Cartao;
 import desafio.vr.miniautorizador.services.CartaoService;
 import desafio.vr.miniautorizador.utils.Verificador;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 @Controller
@@ -55,6 +60,19 @@ public class CartaoController {
             return new ResponseEntity<String>(service.consultarSaldo(numeroCartao), HttpStatus.OK);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/transacoes")
+    private ResponseEntity<String> efetuarTransacao(@RequestBody @Valid TransacaoDto transacaoDto) {
+        try {
+            return new ResponseEntity<String>(service.realizarTransacao(transacaoDto), HttpStatus.CREATED);
+        } catch (CartaoInvalidoException ex) {
+            return new ResponseEntity<String>("CARTAO_INEXISTENTE", HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (SaldoInsuficienteException ex) {
+            return new ResponseEntity<String>("SALDO_INSUFICIENTE", HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (SenhaInvalidaException ex) {
+            return new ResponseEntity<String>("SENHA_INVALIDA", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 }

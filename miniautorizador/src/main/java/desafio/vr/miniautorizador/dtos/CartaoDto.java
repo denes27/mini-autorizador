@@ -1,5 +1,7 @@
 package desafio.vr.miniautorizador.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class CartaoDto {
 
     private String numeroCartao;
@@ -21,4 +23,5 @@ public class CartaoDto {
     public String getSenha() {
         return senha;
     }
+
 }
