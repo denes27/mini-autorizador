@@ -1,6 +1,7 @@
 package desafio.vr.miniautorizador.dtos;
 
 public class CartaoDto {
+
     private String numeroCartao;
     private String senha;
 

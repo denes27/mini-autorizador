@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 public class CartaoController {
@@ -27,11 +28,15 @@ public class CartaoController {
     }
 
     @PostMapping("/cartoes")
-    private ResponseEntity<?> criarCartao(@RequestBody(required = true) CartaoDto novoCartao) {
+    private ResponseEntity<CartaoDto> criarCartao(@RequestBody(required = true) CartaoDto novoCartao) {
         if(!verificador.verificarCartaoDto(novoCartao)) {
-            return new ResponseEntity<String>("Cartão inválido", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Cartão inválido");
         }
 
-        return new ResponseEntity<CartaoDto>(service.criarCartao(novoCartao), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<CartaoDto>(service.criarCartao(novoCartao), HttpStatus.CREATED);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<CartaoDto>(novoCartao, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 }
