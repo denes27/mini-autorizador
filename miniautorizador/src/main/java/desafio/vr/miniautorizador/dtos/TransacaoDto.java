@@ -1,6 +1,9 @@
 package desafio.vr.miniautorizador.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 public class TransacaoDto {
 
@@ -9,6 +12,7 @@ public class TransacaoDto {
     @NotBlank
     private String senhaCartao;
     @NotBlank
+    @PositiveOrZero
     private double valor;
 
     public TransacaoDto(String numeroCartao, String senha, double valor) {

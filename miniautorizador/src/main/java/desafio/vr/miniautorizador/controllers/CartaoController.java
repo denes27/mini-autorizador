@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
-
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 @Controller
 public class CartaoController {
@@ -40,11 +38,7 @@ public class CartaoController {
     }
 
     @PostMapping("/cartoes")
-    private ResponseEntity<CartaoDto> criarCartao(@RequestBody(required = true) CartaoDto novoCartao) {
-        if(!verificador.verificarCartaoDto(novoCartao)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Cartão inválido");
-        }
-
+    private ResponseEntity<CartaoDto> criarCartao(@RequestBody(required = true) @Valid CartaoDto novoCartao) {
         logger.info("Criação de cartão requisitada. Número: " + novoCartao.getNumeroCartao());
 
         try {

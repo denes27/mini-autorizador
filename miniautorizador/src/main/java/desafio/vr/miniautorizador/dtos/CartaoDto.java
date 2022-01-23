@@ -2,9 +2,13 @@ package desafio.vr.miniautorizador.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.validation.constraints.NotBlank;
+
 public class CartaoDto {
 
+    @NotBlank
     private String numeroCartao;
+    @NotBlank
     private String senha;
 
     public CartaoDto() {

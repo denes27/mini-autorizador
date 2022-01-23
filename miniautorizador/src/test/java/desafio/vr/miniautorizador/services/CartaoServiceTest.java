@@ -3,24 +3,24 @@ package desafio.vr.miniautorizador.services;
 import desafio.vr.miniautorizador.dtos.CartaoDto;
 import desafio.vr.miniautorizador.dtos.TransacaoDto;
 import desafio.vr.miniautorizador.exceptions.CartaoInvalidoException;
+import desafio.vr.miniautorizador.exceptions.ExceptionHandler;
 import desafio.vr.miniautorizador.exceptions.SaldoInsuficienteException;
 import desafio.vr.miniautorizador.exceptions.SenhaInvalidaException;
 import desafio.vr.miniautorizador.models.Cartao;
 import desafio.vr.miniautorizador.repositories.CartaoRepository;
+import desafio.vr.miniautorizador.utils.Verificador;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -34,13 +34,20 @@ public class CartaoServiceTest {
     @MockBean
     private CartaoRepository cartaoRepository;
 
+    @MockBean
+    private Verificador verificador;
+
+    @MockBean
+    private ExceptionHandler exceptionHandler;
+
     @Test
-    public void deveRetornar422SeCartaoJaExiste() {
+    public void deveLançarExcecaoSeTentativaDeCriarCartaoJaExistente() {
         CartaoDto dto = Mockito.mock(CartaoDto.class);
-        Mockito.when(cartaoRepository.existsById(dto.getNumeroCartao())).thenReturn(true);
-        ResponseStatusException ex = Assert.assertThrows(ResponseStatusException.class, () -> subject.criarCartao(dto));
+        Mockito.when(verificador.verificarCartaoDto(dto)).thenReturn(true);
+        Mockito.when(cartaoRepository.existsById(anyString())).thenReturn(false);
+        Mockito.when(exceptionHandler.throwCartaoInvalidoException()).thenThrow(CartaoInvalidoException.class);
+        CartaoInvalidoException ex = Assert.assertThrows(CartaoInvalidoException.class, () -> subject.criarCartao(dto));
         verify(cartaoRepository, times(1)).existsById(dto.getNumeroCartao());
-        Assert.assertTrue(ex.getStatus().equals(HttpStatus.UNPROCESSABLE_ENTITY));
     }
 
     @Test
@@ -49,17 +56,19 @@ public class CartaoServiceTest {
         Cartao cartao = Mockito.mock(Cartao.class);
         Mockito.when(cartaoRepository.existsById(dto.getNumeroCartao())).thenReturn(false);
         Mockito.when(cartaoRepository.save(any(Cartao.class))).thenReturn(cartao);
+        Mockito.when(verificador.verificarCartaoDto(dto)).thenReturn(true);
         subject.criarCartao(dto);
         verify(cartaoRepository, times(1)).existsById(dto.getNumeroCartao());
         verify(cartaoRepository, times(1)).save(any(Cartao.class));
     }
 
     @Test
-    public void deveRetornar404SeSaldoConsultadoDeCartaoInexistente() {
+    public void deveLancarExcecaoSeSaldoConsultadoDeCartaoInexistente() {
         String numeroCartao = Mockito.anyString();
         Mockito.when(cartaoRepository.findById(numeroCartao)).thenReturn(Optional.empty());
-        ResponseStatusException ex = Assert.assertThrows(ResponseStatusException.class, () -> subject.consultarSaldo(numeroCartao));
-        Assert.assertTrue(ex.getStatus().equals(HttpStatus.BAD_REQUEST));
+        Mockito.when(exceptionHandler.throwCartaoInvalidoException()).thenThrow(CartaoInvalidoException.class);
+        CartaoInvalidoException ex = Assert.assertThrows(CartaoInvalidoException.class, () -> subject.consultarSaldo(numeroCartao));
+
     }
 
     @Test
@@ -76,6 +85,7 @@ public class CartaoServiceTest {
         TransacaoDto dto = Mockito.mock(TransacaoDto.class);
         Cartao cartao = Mockito.mock(Cartao.class);
         Mockito.when(cartaoRepository.findById(dto.getNumeroCartao())).thenReturn(Optional.of(cartao));
+        Mockito.when(exceptionHandler.throwSaldoInsuficienteException()).thenThrow(SaldoInsuficienteException.class);
         Mockito.when(cartao.getSaldo()).thenReturn(500.00);
         Mockito.when(cartao.getSenha()).thenReturn("senha");
         Mockito.when(dto.getValor()).thenReturn(1000.00);
@@ -98,6 +108,7 @@ public class CartaoServiceTest {
         Mockito.when(cartaoRepository.findById(dto.getNumeroCartao())).thenReturn(Optional.of(cartao));
         Mockito.when(dto.getSenhaCartao()).thenReturn("senha");
         Mockito.when(cartao.getSenha()).thenReturn("outrasenha");
+        Mockito.when(exceptionHandler.throwSaldoInsuficienteException()).thenThrow(SenhaInvalidaException.class);
         SenhaInvalidaException exception = Assert.assertThrows(SenhaInvalidaException.class, () -> subject.realizarTransacao(dto));
     }
 
