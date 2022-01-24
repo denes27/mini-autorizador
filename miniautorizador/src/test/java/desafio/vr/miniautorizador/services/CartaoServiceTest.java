@@ -119,7 +119,7 @@ public class CartaoServiceTest {
         Mockito.when(cartaoRepository.findById(dto.getNumeroCartao())).thenReturn(Optional.of(cartao));
         Mockito.when(cartao.getSaldo()).thenReturn(500.00);
         Mockito.when(cartao.getSenha()).thenReturn("senha");
-        Mockito.when(dto.getValor()).thenReturn(100.00);
+        Mockito.when(dto.getValor()).thenReturn(500.00);
         Mockito.when(dto.getSenhaCartao()).thenReturn("senha");
         String result = subject.realizarTransacao(dto);
         verify(cartaoRepository, times(1)).save(cartao);
