@@ -44,7 +44,7 @@ public class CartaoServiceTest {
     public void deveLançarExcecaoSeTentativaDeCriarCartaoJaExistente() {
         CartaoDto dto = Mockito.mock(CartaoDto.class);
         Mockito.when(verificador.verificarCartaoDto(dto)).thenReturn(true);
-        Mockito.when(cartaoRepository.existsById(anyString())).thenReturn(false);
+        Mockito.when(cartaoRepository.existsById(dto.getNumeroCartao())).thenReturn(true);
         Mockito.when(exceptionHandler.throwCartaoInvalidoException()).thenThrow(CartaoInvalidoException.class);
         CartaoInvalidoException ex = Assert.assertThrows(CartaoInvalidoException.class, () -> subject.criarCartao(dto));
         verify(cartaoRepository, times(1)).existsById(dto.getNumeroCartao());
@@ -54,7 +54,7 @@ public class CartaoServiceTest {
     public void deveInvocarCreateNoBDSeCartaoNaoExiste() {
         CartaoDto dto = Mockito.mock(CartaoDto.class);
         Cartao cartao = Mockito.mock(Cartao.class);
-        Mockito.when(cartaoRepository.existsById(dto.getNumeroCartao())).thenReturn(false);
+        Mockito.when(cartaoRepository.existsById(dto.getNumeroCartao())).thenReturn(true);
         Mockito.when(cartaoRepository.save(any(Cartao.class))).thenReturn(cartao);
         Mockito.when(verificador.verificarCartaoDto(dto)).thenReturn(true);
         subject.criarCartao(dto);
@@ -108,7 +108,7 @@ public class CartaoServiceTest {
         Mockito.when(cartaoRepository.findById(dto.getNumeroCartao())).thenReturn(Optional.of(cartao));
         Mockito.when(dto.getSenhaCartao()).thenReturn("senha");
         Mockito.when(cartao.getSenha()).thenReturn("outrasenha");
-        Mockito.when(exceptionHandler.throwSaldoInsuficienteException()).thenThrow(SenhaInvalidaException.class);
+        Mockito.when(exceptionHandler.throwSenhaException()).thenThrow(SenhaInvalidaException.class);
         SenhaInvalidaException exception = Assert.assertThrows(SenhaInvalidaException.class, () -> subject.realizarTransacao(dto));
     }
 

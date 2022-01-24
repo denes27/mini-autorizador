@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "d5e0871c-88f6-4fb2-bb33-b6d40f5a10b7",
+		"name": "Mini Autorizador",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Criar Cartão",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"numeroCartao\": \"6549873025634501\",\r\n    \"senha\": \"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9090/cartoes",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"cartoes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar Cartoes",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar Saldo",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Efetuar Transação",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"numeroCartao\": \"6549873025634503\",\r\n    \"senhaCartao\": \"123456\",\r\n    \"valor\": 470.00\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9090/transacoes",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"transacoes"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

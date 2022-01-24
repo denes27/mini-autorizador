@@ -45,7 +45,7 @@ public class CartaoService {
         //opção usando operador ternário ao invés de if
         boolean cartaoValido = verificador.verificarCartaoDto(novoCartaoDto) ? true : exceptionHandler.throwCartaoInvalidoException();
         logger.info("Cartão válido : {}", cartaoValido);
-        cartaoValido = repository.existsById(novoCartaoDto.getNumeroCartao()) ? true : exceptionHandler.throwCartaoInvalidoException();
+        cartaoValido = repository.existsById(novoCartaoDto.getNumeroCartao()) ? exceptionHandler.throwCartaoInvalidoException() : true;
         logger.info("Cartão novo: {}", cartaoValido);
         Cartao novoCartao = repository.save(gerarCartão(novoCartaoDto));
         logger.info("Novo cartão criado. Número: {}", novoCartaoDto.getNumeroCartao());
@@ -61,9 +61,6 @@ public class CartaoService {
         return String.format(Locale.ENGLISH, "%.2f", cartao.getSaldo());
     }
 
-    //Apesar de estarmos lidando apenas com um documento, @Transactional garante que o método
-    // como um tod0 vai ser tratado como uma transação, resolvendo problemas de concorrencia
-    @Transactional(value = "mongoTransactionManager", propagation = Propagation.REQUIRED)
     @Retryable(value = {MongoCommandException.class, MongoException.class}, exclude = {MongoTransactionException.class, UncategorizedMongoDbException.class},
             backoff = @Backoff(delay = 10), maxAttempts = 10)
     public String realizarTransacao(TransacaoDto dto) {
@@ -73,7 +70,7 @@ public class CartaoService {
 
         boolean senhaEhValida = (cartao.getSenha().equals(dto.getSenhaCartao())) ? true : exceptionHandler.throwSenhaException();
         logger.info("Senha valida: {}", senhaEhValida);
-        boolean saldoEhSuficiente = dto.getValor() < dto.getValor() ? true : exceptionHandler.throwSaldoInsuficienteException();
+        boolean saldoEhSuficiente = dto.getValor() <= cartao.getSaldo() ? true : exceptionHandler.throwSaldoInsuficienteException();
         logger.info("Saldo suficiente: {}", saldoEhSuficiente);
 
 

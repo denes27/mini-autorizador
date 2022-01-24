@@ -8,7 +8,6 @@ public class Cartao {
     private String numeroCartao;
     private double saldo;
     private String senha;
-    private boolean travaDeConcorrencia;
 
     public Cartao(String numeroCartao, double saldo, String senha) {
         this.numeroCartao = numeroCartao;
@@ -32,11 +31,4 @@ public class Cartao {
         return senha;
     }
 
-    public boolean isTravaDeConcorrencia() {
-        return travaDeConcorrencia;
-    }
-
-    public void setTravaDeConcorrencia(boolean travaDeConcorrencia) {
-        this.travaDeConcorrencia = travaDeConcorrencia;
-    }
 }
