@@ -7,7 +7,6 @@ import desafio.vr.miniautorizador.exceptions.SaldoInsuficienteException;
 import desafio.vr.miniautorizador.exceptions.SenhaInvalidaException;
 import desafio.vr.miniautorizador.models.Cartao;
 import desafio.vr.miniautorizador.services.CartaoService;
-import desafio.vr.miniautorizador.utils.Verificador;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +24,11 @@ import javax.validation.Valid;
 public class CartaoController {
 
     @Autowired
-    private Verificador verificador;
-
-    @Autowired
     private CartaoService service;
 
     private Logger logger = LogManager.getLogger("CartaoController");
 
+    //método extra para verificar os cartões criados e seu estado
     @GetMapping("/cartoes")
     private ResponseEntity<Iterable<Cartao>> listarCartoes() {
         return new ResponseEntity<Iterable<Cartao>>(service.listarCartoes(), HttpStatus.OK);
@@ -43,7 +40,7 @@ public class CartaoController {
 
         try {
             return new ResponseEntity<CartaoDto>(service.criarCartao(novoCartao), HttpStatus.CREATED);
-        } catch (ResponseStatusException ex) {
+        } catch (CartaoInvalidoException ex) {
             return new ResponseEntity<CartaoDto>(novoCartao, HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
@@ -52,7 +49,7 @@ public class CartaoController {
     private ResponseEntity<String> consultarSaldo(@PathVariable("numeroCartao") String numeroCartao) {
         try {
             return new ResponseEntity<String>(service.consultarSaldo(numeroCartao), HttpStatus.OK);
-        } catch (ResponseStatusException ex) {
+        } catch (CartaoInvalidoException ex) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
