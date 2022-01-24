@@ -3,7 +3,7 @@
 * Github: denes27
 * Gitlab: denes27
 
-###Sobre a Arquitetura ###
+### Sobre a Arquitetura ###
 O projeto foi executado em uma arquitetura padrão Spring MVC, com as requisições entrando na aplicação pela Controller, as regras de negócio executadas nos Services que
     por sua vez invoca o repository para a integração com a camada de persistência. Este modelo foi escolhido pela simplicidade para fazer projetos desta natureza sem perder
     muito em questões de encapsulamento e isolamento das regras de negócio das tecnologias utilizadas. 
